@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<groupId>org.springframework.boot</groupId>
+		<version>2.0.4.RELEASE</version>
+	</parent>
+
+	<groupId>com.scheible.simplistictranspiler.samplewebapp</groupId>
+	<artifactId>simplistic-sample-webapp</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>simplistic-transpiler::sample-webapp</name>
+
+	<properties>
+		<java.version>1.8</java.version>
+
+		<gwt.version>2.8.2</gwt.version>
+		<gwt-jsinterop.version>1.0.2</gwt-jsinterop.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.scheible.simplistictranspiler.transpiler</groupId>
+			<artifactId>simplistic-transpiler-core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.jsinterop</groupId>
+			<artifactId>jsinterop-annotations</artifactId>
+			<version>${gwt-jsinterop.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.github.bonigarcia</groupId>
+			<artifactId>webdrivermanager</artifactId>
+			<version>2.2.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-chrome-driver</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>jasmine</artifactId>
+			<version>3.1.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>jsweet-external</id>
+			<name>libs-release</name>
+			<url>http://repository.jsweet.org/artifactory/ext-release-local</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- <argLine>-verbose:class</argLine> -->
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.scheible.simplistictranspiler.samplewebapp.server.GwtSampleSpringApplication</mainClass>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<version>${gwt.version}</version>
+				<executions>
+					<execution>
+						<id>gwt-compiler-invocation</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<webappDirectory>${project.build.directory}/classes/static/gwt</webappDirectory>
+							<deploy>${project.build.directory}/classes/gwt</deploy>
+							<persistentunitcache>false</persistentunitcache>
+						</configuration>
+					</execution>
+					<execution>
+						<id>gwt-run-codeserver</id>
+						<goals>
+							<goal>run-codeserver</goal>
+						</goals>
+						<configuration>
+							<launcherDir>${project.build.directory}/classes/static/gwt</launcherDir>
+							<extraJvmArgs>-Dlogback.configurationFile=gwt-codeserver-logback.xml</extraJvmArgs>
+							<style>PRETTY</style>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.google.jsinterop</groupId>
+						<artifactId>jsinterop-annotations</artifactId>
+						<version>${gwt-jsinterop.version}</version>
+						<classifier>sources</classifier>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<generateJsInteropExports>true</generateJsInteropExports>
+					<module>com.scheible.simplistictranspiler.samplewebapp.gwt.GwtSample</module>
+					<failOnError>true</failOnError>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>gwt/**/*.symbolMap</exclude>
+						<exclude>gwt/**/rpcPolicyManifest/manifest.txt</exclude>
+						<exclude>static/gwt/**/*.devmode.js</exclude>
+
+						<exclude>gwt-codeserver-logback.xml</exclude>
+
+						<exclude>com/**/client/</exclude>
+						<exclude>com/**/*.gwt.xml</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

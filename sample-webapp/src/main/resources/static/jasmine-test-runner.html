@@ -1,0 +1,103 @@
+<html lang=en>
+	<head>
+		<meta charset=utf-8>
+		<title>Jasmine Test Runner</title>
+		
+		<link rel="stylesheet" href="webjars/jasmine/3.1.0/lib/jasmine-core/jasmine.css">
+
+		<script src="webjars/jasmine/3.1.0/lib/jasmine-core/jasmine.js"></script>
+		<script src="webjars/jasmine/3.1.0/lib/jasmine-core/jasmine-html.js"></script>
+		
+		<script src="webjars/jasmine/3.1.0/lib/jasmine-core/boot.js"></script>		
+		<script>
+			// NOTE We have to defere Jasmine running after test class is loaded.
+			jasmine.onLoadBootFn = window.onload;
+			window.onload = undefined;
+		</script>
+		
+		<script>
+			// Source: https://plainjs.com/javascript/ajax/send-ajax-get-and-post-requests-47/
+			function postAjax(url, data, success) {
+				const xhr = new XMLHttpRequest();
+				xhr.open('POST', url);
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState > 3 && xhr.status == 200) {
+						success(xhr.responseText);
+					}
+				};
+				xhr.setRequestHeader('Content-Type', 'application/json');
+				xhr.send(JSON.stringify(data));
+				return xhr;
+			}
+			
+			// Source: https://stackoverflow.com/a/901144
+			function getParameterByName(name, url) {
+				if (!url) url = window.location.href;
+				name = name.replace(/[\[\]]/g, '\\$&');
+				var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+				results = regex.exec(url);
+				if (!results) return null;
+				if (!results[2]) return '';
+				return decodeURIComponent(results[2].replace(/\+/g, ' '));
+			}
+			
+			// NOTE Establish the communication channel to the server.
+			jasmine.specPostTracker = [];
+			
+			jasmine.getEnv().addReporter({
+				specDone: function(result) {
+					jasmine.specPostTracker.push(new Promise((resolve, reject) => {
+						result.status = result.status.toUpperCase();
+						postAjax('/jasmine-spec-results', result, function() { resolve(true); });	
+					}));					
+				},
+				jasmineDone: function() {
+					// NOTE Whole suite is done as soon all individual specs have posted their result.
+					Promise.all(jasmine.specPostTracker).then(() => {
+						if(getParameterByName('debug') !== 'true') {
+							postAjax('/jasmine-suite-dones', {specCount : jasmine.specPostTracker.length}, function() {});	
+						}
+					});
+				}
+			});
+		</script>
+			
+		<script type="module">
+			const testClassUrl = getParameterByName('test-class-name');
+			
+			// NOTE Dynamically load the test class.
+			import(testClassUrl).then((module) => {
+				const TestClass = module.default;
+				
+				// NOTE All specs with their method name.
+				const specs = [];
+				
+				Object.getOwnPropertyNames(TestClass.prototype).forEach(function(property) {
+					const fn = TestClass.prototype[property];
+					if(property !== 'constructor' && typeof fn === 'function') {
+						// NOTE Intercept invocation of it(...) and store a reference to their function.
+						fn.apply({
+							it: function(fn) {
+								specs.push({name: property, fn: fn});
+							}
+						});						
+					}
+				});
+				
+				// NOTE We now have to define a test suite with the collected sepecs.
+				const testClassName = testClassUrl.substring(testClassUrl.lastIndexOf('/') + 1, testClassUrl.lastIndexOf('.'));
+				describe(testClassName, function() {
+					for(const spec of specs) {
+						it(spec.name, spec.fn);
+					}
+				});
+				
+				// NOTE After the test suite is defined we can continue with the regular Jasmine boot.
+				jasmine.onLoadBootFn();
+			});
+		</script>
+	</head>
+	<body>
+		<input type="button" value="Close" onclick="postAjax('/jasmine-runner-closes', {});">
+	</body>
+</html>

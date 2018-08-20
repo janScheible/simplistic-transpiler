@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+	<action>
+		<actionName>clean</actionName>
+		<packagings>
+			<packaging>*</packaging>
+		</packagings>
+		<goals>
+			<goal>clean</goal>
+		</goals>
+		<properties>
+			<skipTests>true</skipTests>
+		</properties>
+	</action>	
+	<action>
+		<actionName>rebuild</actionName>
+		<packagings>
+			<packaging>*</packaging>
+		</packagings>
+		<goals>
+			<goal>clean</goal>
+			<goal>install</goal>
+		</goals>
+		<properties>
+			<skipTests>true</skipTests>
+		</properties>
+	</action>
+	<action>
+		<actionName>CUSTOM-Full Build</actionName>
+		<displayName>Full Build</displayName>
+		<goals>
+			<goal>clean</goal>
+			<goal>install</goal>
+		</goals>
+	</action>      
+	<action>
+		<actionName>CUSTOM-Sortpom</actionName>
+		<displayName>Sortpom</displayName>
+		<goals>
+			<goal>com.github.ekryd.sortpom:sortpom-maven-plugin:sort</goal>
+		</goals>
+		<properties>
+			<sort.keepBlankLines>true</sort.keepBlankLines>
+			<sort.nrOfIndentSpace>-1</sort.nrOfIndentSpace>
+		</properties>
+	</action>      
+	<action>
+		<actionName>CUSTOM-FindBugs</actionName>
+		<displayName>FindBugs</displayName>
+		<goals>
+			<goal>org.codehaus.mojo:findbugs-maven-plugin:check</goal>
+		</goals>
+	</action>      
+	<action>
+		<actionName>CUSTOM-Integration Test</actionName>
+		<displayName>Integration Test</displayName>
+		<goals>
+			<goal>org.apache.maven.plugins:maven-failsafe-plugin:integration-test</goal>
+		</goals>
+	</action>
+</actions>

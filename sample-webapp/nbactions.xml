@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>rebuild</actionName>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+        </goals>
+        <properties>
+            <gwt.compiler.skip>true</gwt.compiler.skip>
+            <skipTests>true</skipTests>
+            <skip>true</skip>
+        </properties>
+    </action>
+    <action>
+        <actionName>build</actionName>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <goal>install</goal>
+        </goals>
+        <properties>
+            <gwt.compiler.skip>true</gwt.compiler.skip>
+            <skipTests>true</skipTests>
+            <skip>true</skip>
+        </properties>
+    </action>
+    <action>
+        <actionName>debug</actionName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>spring-boot:run</goal>
+        </goals>
+        <properties>
+            <jpda.listen>true</jpda.listen>
+            <skipTests>true</skipTests>
+            <spring-boot.run.jvmArguments>-noverify -XX:TieredStopAtLevel=1 -Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address}</spring-boot.run.jvmArguments>
+            <Env.SPRING_DEVTOOLS_RESTART_TRIGGERFILE>.nbRestartTrigger</Env.SPRING_DEVTOOLS_RESTART_TRIGGERFILE>
+            <Env.SPRING_OUTPUT_ANSI_ENABLED>always</Env.SPRING_OUTPUT_ANSI_ENABLED>
+            <spring-boot.run.profiles>local-stage</spring-boot.run.profiles>
+        </properties>
+    </action>
+    <action>
+        <actionName>run</actionName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>spring-boot:run</goal>
+        </goals>
+        <properties>
+            <spring-boot.run.jvmArguments>-noverify -XX:TieredStopAtLevel=1</spring-boot.run.jvmArguments>
+            <Env.SPRING_DEVTOOLS_RESTART_TRIGGERFILE>.nbRestartTrigger</Env.SPRING_DEVTOOLS_RESTART_TRIGGERFILE>
+            <Env.SPRING_OUTPUT_ANSI_ENABLED>always</Env.SPRING_OUTPUT_ANSI_ENABLED>
+            <spring-boot.run.profiles>local-stage</spring-boot.run.profiles>
+        </properties>
+    </action>    
+    <action>
+        <actionName>CUSTOM-Full Build</actionName>
+        <displayName>Full Build</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+        </goals>
+    </action>  
+    <action>
+        <actionName>CUSTOM-GWT Compile only</actionName>
+        <displayName>GWT Compile only</displayName>
+        <goals>
+            <goal>gwt:compile@gwt-compiler-invocation</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-GWT Codeserver</actionName>
+        <displayName>GWT Codeserver</displayName>
+        <goals>
+            <goal>gwt:run-codeserver@gwt-run-codeserver</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-Sortpom</actionName>
+        <displayName>Sortpom</displayName>
+        <goals>
+            <goal>com.github.ekryd.sortpom:sortpom-maven-plugin:sort</goal>
+        </goals>
+        <properties>
+            <sort.nrOfIndentSpace>-1</sort.nrOfIndentSpace>
+            <sort.keepBlankLines>true</sort.keepBlankLines>
+        </properties>
+    </action>   	
+	<action>
+		<actionName>CUSTOM-FindBugs</actionName>
+		<displayName>FindBugs</displayName>
+		<goals>
+			<goal>org.codehaus.mojo:findbugs-maven-plugin:check</goal>
+		</goals>
+	</action>      
+	<action>
+		<actionName>CUSTOM-Integration Test</actionName>
+		<displayName>Integration Test</displayName>
+		<goals>
+			<goal>org.apache.maven.plugins:maven-failsafe-plugin:integration-test</goal>
+		</goals>
+	</action>      
+</actions>
